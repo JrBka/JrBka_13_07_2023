@@ -20,5 +20,15 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\EntityListener\UserListener:
+        tags:
+            - { name: doctrine.orm.entity_listener , entity: 'App\Entity\User', event: prePersist }
+            - { name: doctrine.orm.entity_listener , entity: 'App\Entity\User', event: preUpdate }
+
+    App\EntityListener\TaskListener:
+        tags:
+            - { name: doctrine.orm.entity_listener , entity: 'App\Entity\Task', event: prePersist }
+
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
