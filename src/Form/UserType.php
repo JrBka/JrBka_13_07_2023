@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Role;
 use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -16,7 +18,10 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('username', TextType::class, ['label' => "Nom d'utilisateur"])
+            ->add('username', TextType::class, [
+                'label' => "Nom d'utilisateur",
+                'required'=>true,
+                ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
@@ -25,7 +30,16 @@ class UserType extends AbstractType
                 'first_options'  => ['label' => 'Mot de passe'],
                 'second_options' => ['label' => 'Tapez le mot de passe à nouveau'],
             ])
-            ->add('email', EmailType::class, ['label' => 'Adresse email'])
+            ->add('email', EmailType::class, [
+                'label' => 'Adresse email',
+                'required'=>true,
+                ])
+            ->add('roles',EntityType::class, [
+                'class'=>Role::class,
+                'multiple'=>true,
+                'mapped'=>false,
+                'required'=>true,
+            ])
         ;
     }
 

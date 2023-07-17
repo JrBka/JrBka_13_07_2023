@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Role;
 use App\Entity\Task;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -15,10 +16,21 @@ class AppFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
+        $role1 = new Role();
+        $role1->setRoleName(['ROLE_ADMIN']);
+        $manager->persist($role1);
+
+        $role2 = new Role();
+        $role2->setRoleName(['ROLE_USER']);
+        $manager->persist($role2);
+
+        $manager->flush();
+
         $anonymeUser = new User();
         $anonymeUser->setUsername('anonyme')
             ->setPlainPassword('Password123$')
-            ->setEmail('anonyme@gmail.com');
+            ->setEmail('anonyme@gmail.com')
+            ->setRoles($role2);
         $manager->persist($anonymeUser);
         $manager->flush();
 
@@ -26,7 +38,7 @@ class AppFixtures extends Fixture
         $admin->setUsername('admin')
             ->setPlainPassword('Password123$')
             ->setEmail('admin@gmail.com')
-            ->setRoles(['ROLE_ADMIN']);
+            ->setRoles($role1);
         $manager->persist($admin);
 
         $task1 = new Task();
