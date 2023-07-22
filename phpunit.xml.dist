@@ -30,6 +30,10 @@
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
     </listeners>
 
+    <logging>
+        <log type="coverage-text" target="php://stdout"/>
+    </logging>
+
     <!-- Uncomment when adding extensions
     <extensions>
     </extensions>

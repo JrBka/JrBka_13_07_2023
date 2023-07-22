@@ -36,6 +36,7 @@ class UserType extends AbstractType
                 ])
             ->add('roles',EntityType::class, [
                 'class'=>Role::class,
+                'label'=> 'Role',
                 'multiple'=>true,
                 'mapped'=>false,
                 'required'=>true,

@@ -6,15 +6,17 @@ namespace App\EntityListener;
 
 use App\Entity\Task;
 use App\Repository\UserRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Security;
 
-class TaskListener extends AbstractController
+class TaskListener
 {
     private $user;
     private $repository;
+    private $security;
 
-    public function __construct(UserRepository $repository){
+    public function __construct(UserRepository $repository, Security $security){
         $this->repository = $repository;
+        $this->security = $security;
     }
 
     /**
@@ -23,8 +25,8 @@ class TaskListener extends AbstractController
      */
     public function PrePersist(Task $task): void
     {
-        if ($this->getUser()){
-            $this->user = $this->getUser();
+        if ($this->security->getUser()){
+            $this->user = $this->security->getUser();
         }else{
             $this->user = $this->repository->findOneBy(['username' => 'anonyme']);
         }
