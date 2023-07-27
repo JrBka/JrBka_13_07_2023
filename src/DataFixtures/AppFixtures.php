@@ -41,6 +41,13 @@ class AppFixtures extends Fixture
             ->setRoles($role1);
         $manager->persist($admin);
 
+        $user = new User();
+        $user->setUsername('user1')
+            ->setPlainPassword('Password123$')
+            ->setEmail('user@gmail.com')
+            ->setRoles($role2);
+        $manager->persist($user);
+
         $task1 = new Task();
         $task1->setTitle('La tache 1')
             ->setContent('Il faut faire ceci !');

@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Role;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -9,6 +10,7 @@ class UserControllerTest extends WebTestCase
 {
     private $client;
     private $entityManager;
+    private $roleId;
 
     public function setUp(): void
     {
@@ -49,6 +51,13 @@ class UserControllerTest extends WebTestCase
 
     public function testCreateAction()
     {
+        $roles = $this->entityManager->getRepository(Role::class)->findAll();
+        foreach ($roles as $role){
+            if ($role->getRoleName()[0] == "ROLE_USER"){
+                $this->roleId= $role->getId();
+            }
+        }
+
         $this->client->request('GET', '/users/create');
 
         $this->client->submitForm('Ajouter',[
@@ -56,7 +65,7 @@ class UserControllerTest extends WebTestCase
                 'user[plainPassword][first]' => 'Password123$',
                 'user[plainPassword][second]' => 'Password123$',
                 'user[email]' => 'bibi2@gmail.com',
-                'user[roles]' => '2'
+                'user[roles]' => $this->roleId
             ]
         );
 
@@ -74,6 +83,12 @@ class UserControllerTest extends WebTestCase
         $userEdit = $this->entityManager->getRepository(User::class)->findOneBy([],['id'=>'DESC']);
         $userEditId = $userEdit->getId();
         $nb = random_int(2,2000);
+        $roles = $this->entityManager->getRepository(Role::class)->findAll();
+        foreach ($roles as $role){
+            if ($role->getRoleName()[0] == "ROLE_USER"){
+                $this->roleId= $role->getId();
+            }
+        }
 
         $this->client->request('GET', '/users/'.$userEditId.'/edit');
 
@@ -82,7 +97,7 @@ class UserControllerTest extends WebTestCase
                 'user[plainPassword][first]' => 'Password123$',
                 'user[plainPassword][second]' => 'Password123$',
                 'user[email]' => 'bibi530@gmail.com',
-                'user[roles]' => '2'
+                'user[roles]' => $this->roleId
             ]
         );
 

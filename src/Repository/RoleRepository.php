@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Role;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Mixed_;
 
 /**
  * @extends ServiceEntityRepository<Role>
@@ -21,22 +22,26 @@ class RoleRepository extends ServiceEntityRepository
         parent::__construct($registry, Role::class);
     }
 
-    public function add(Role $entity, bool $flush = false): void
+    public function add(Role $entity, bool $flush = false): bool
     {
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
             $this->getEntityManager()->flush();
+            return true;
         }
+        return false;
     }
 
-    public function remove(Role $entity, bool $flush = false): void
+    public function remove(Role $entity, bool $flush = false): bool
     {
         $this->getEntityManager()->remove($entity);
 
         if ($flush) {
             $this->getEntityManager()->flush();
+            return true;
         }
+        return false;
     }
 
 }

@@ -140,7 +140,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testDeleteTaskActionWithUserUnauthorized()
     {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'anonyme']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'user1']);
         $this->client->loginUser($user);
         $task = $this->entityManager->getRepository(Task::class)->findOneBy([]);
         $taskId = $task->getId();

@@ -21,22 +21,26 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
-    public function add(Task $entity, bool $flush = false): void
+    public function add(Task $entity, bool $flush = false): bool
     {
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
             $this->getEntityManager()->flush();
+            return true;
         }
+        return false;
     }
 
-    public function remove(Task $entity, bool $flush = false): void
+    public function remove(Task $entity, bool $flush = false): bool
     {
         $this->getEntityManager()->remove($entity);
 
         if ($flush) {
             $this->getEntityManager()->flush();
+            return true;
         }
+        return false;
     }
 
 }
