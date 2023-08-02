@@ -59,7 +59,7 @@ class TaskRepositoryTest extends KernelTestCase
     {
         $this->repository->add($this->task, true);
 
-        $id = strval($this->task->getId());
+        $id = $this->task->getId();
 
         $result = $this->repository->findBy(['id' => $id]);
 

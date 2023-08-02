@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
     /**
+     * This function displays the user list
      * @Route("/users", name="user_list")
      */
     public function listAction(UserRepository $repository): Response
@@ -22,6 +23,7 @@ class UserController extends AbstractController
     }
 
     /**
+     * This function displays the creation of user page and creates a user
      * @Route("/users/create", name="user_create")
      */
     public function createAction(Request $request, EntityManagerInterface $em)
@@ -33,10 +35,8 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('plainPassword')->getData();
-            $role = $form->get('roles')->getData();
 
             $user->setPlainPassword($plainPassword);
-            $user->setRoles($role[0]);
 
             $em->persist($user);
             $em->flush();
@@ -50,6 +50,7 @@ class UserController extends AbstractController
     }
 
     /**
+     * This function displays the user edition page and edits a user
      * @Route("/users/{id}/edit", name="user_edit")
      */
     public function editAction(User $user, Request $request, EntityManagerInterface $em)
@@ -59,7 +60,18 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPlainPassword($user->getPassword());
+            $plainPassword = $form->get('plainPassword')->getData();
+            $role = $form->get('roles')->getData();
+
+            if ($role[0] != null){
+                $user->setRoles($role[0]);
+            }else{
+                $user->setRoles($user->getRole());
+            }
+
+            if ($plainPassword != null){
+                $user->setPlainPassword($plainPassword);
+            }
 
             $em->persist($user);
             $em->flush();

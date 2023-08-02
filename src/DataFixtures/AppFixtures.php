@@ -11,6 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 class AppFixtures extends Fixture
 {
     /**
+     * This function loads 2 roles, 3 users and 2 tasks in the database
      * @param ObjectManager $manager
      * @return void
      */

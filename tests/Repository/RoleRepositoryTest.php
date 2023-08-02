@@ -58,7 +58,7 @@ class RoleRepositoryTest extends KernelTestCase
     {
         $this->repository->add($this->role, true);
 
-        $id = strval($this->role->getId());
+        $id = $this->role->getId();
 
         $result = $this->repository->findBy(['id' => $id]);
 

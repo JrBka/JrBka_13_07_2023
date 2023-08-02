@@ -113,4 +113,16 @@ class UserTest extends TestCase
 
     $this->assertSame(['ROLE_USER'], $user->getRoles());
     }
+
+    public function testGetRole()
+    {
+        $user = new User();
+        $role = new Role();
+        $role->setRoleName(['ROLE_USER']);
+
+        $user->setRoles($role);
+
+        $this->assertInstanceOf(Role::class, $user->getRole());
     }
+
+}

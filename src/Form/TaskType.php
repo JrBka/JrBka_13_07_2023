@@ -22,7 +22,6 @@ class TaskType extends AbstractType
                 'label'=>'Contenu',
                 'required'=>true
                 ])
-
         ;
     }
 

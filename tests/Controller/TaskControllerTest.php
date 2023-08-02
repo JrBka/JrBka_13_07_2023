@@ -11,6 +11,7 @@ class TaskControllerTest extends WebTestCase
     private $client;
     private $urlGenerator;
     private $entityManager;
+    private $adminId;
 
     protected function setUp(): void
     {
@@ -19,24 +20,42 @@ class TaskControllerTest extends WebTestCase
         $this->entityManager = $this->client->getContainer()->get('doctrine.orm.entity_manager');
     }
 
-    public function testListActionWithoutUserConnected()
+    public function testListDoneWithoutUserConnected()
     {
-        $this->client->request('GET', $this->urlGenerator->generate('task_list'));
+        $this->client->request('GET', $this->urlGenerator->generate('task_list_done'));
 
         $this->assertResponseStatusCodeSame(302);
         $this->client->followRedirect();
         $this->assertSelectorExists('form[action="/login_check"]');
     }
 
-    public function testListActionWithUserConnected()
+    public function testListDoneWithUserConnected()
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->client->loginUser($user);
 
-        $this->client->request('GET', $this->urlGenerator->generate('task_list'));
+        $this->client->request('GET', $this->urlGenerator->generate('task_list_done'));
 
         $this->assertResponseStatusCodeSame(200);
-        $this->assertSelectorTextContains('h1', 'Liste des tâches');
+    }
+
+    public function testListTodoWithoutUserConnected()
+    {
+        $this->client->request('GET', $this->urlGenerator->generate('task_list_todo'));
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertSelectorExists('form[action="/login_check"]');
+    }
+
+    public function testListTodoWithUserConnected()
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
+        $this->client->loginUser($user);
+
+        $this->client->request('GET', $this->urlGenerator->generate('task_list_todo'));
+
+        $this->assertResponseStatusCodeSame(200);
     }
 
     public function testCreateActionWithUserConnected()
@@ -46,8 +65,9 @@ class TaskControllerTest extends WebTestCase
 
         $this->client->request('GET', $this->urlGenerator->generate('task_create'));
 
+        $nb = uniqid();
         $this->client->submitForm('Ajouter',[
-                'task[title]'=> 'Tâche créé',
+                'task[title]'=> 'Tâche créé'.$nb,
                 'task[content]' => 'Contenu de la tache créé'
             ]
         );
@@ -76,9 +96,10 @@ class TaskControllerTest extends WebTestCase
 
         $this->client->request('GET', '/tasks/'.$taskId.'/edit');
 
+        $nb = uniqid();
         $this->client->submitForm('Modifier',[
-            'task[title]'=> 'Tâche modifiée10',
-            'task[content]' => 'Contenu modifié de la tâche10'
+            'task[title]'=> 'Tâche modifiée n°'.$nb,
+            'task[content]' => 'Contenu modifié de la tâche n°'.$nb
             ]
         );
 
@@ -97,14 +118,31 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorExists('form[action="/login_check"]');
     }
 
-    public function testToggleTaskActionWithUserConnected()
+    public function testToggleTaskActionIsDoneFalseWithUserConnected()
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->client->loginUser($user);
         $task = $this->entityManager->getRepository(Task::class)->findOneBy([]);
+        $task->toggle(false);
         $taskId = $task->getId();
 
-        $crawler = $this->client->request('GET', '/tasks');
+        $crawler = $this->client->request('GET', '/tasks/todo');
+
+        $form = $crawler->filter('form[action="/tasks/'.$taskId.'/toggle"]')->form();
+        $this->client->submit($form);
+
+        $this->assertResponseStatusCodeSame(302);
+    }
+
+    public function testToggleTaskActionIsDoneTrueTrueWithUserConnected()
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
+        $this->client->loginUser($user);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy([]);
+        $task->toggle(true);
+        $taskId = $task->getId();
+
+        $crawler = $this->client->request('GET', '/tasks/done');
 
         $form = $crawler->filter('form[action="/tasks/'.$taskId.'/toggle"]')->form();
         $this->client->submit($form);
@@ -114,7 +152,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testToggleTaskActionWithoutUserConnected()
     {
-        $this->client->request('GET', '/tasks');
+        $this->client->request('GET', '/tasks/todo');
 
         $this->assertResponseStatusCodeSame(302);
         $this->client->followRedirect();
@@ -125,17 +163,20 @@ class TaskControllerTest extends WebTestCase
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->client->loginUser($user);
-        $task = $this->entityManager->getRepository(Task::class)->findOneBy([]);
+        $this->adminId = $user->getId();
+
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['user'=>$this->adminId]);
+
         $taskId = $task->getId();
 
-        $crawler = $this->client->request('GET', '/tasks');
+        $crawler = $this->client->request('GET', '/tasks/todo');
 
         $form = $crawler->filter('form[action="/tasks/'.$taskId.'/delete"]')->form();
         $this->client->submit($form);
 
         $this->assertResponseStatusCodeSame(302);
         $this->client->followRedirect();
-        $this->assertSelectorTextContains('.alert.alert-success','La tâche a bien été supprimé');
+        $this->assertSelectorTextContains('.alert.alert-success','La tâche a bien été supprimée.');
     }
 
     public function testDeleteTaskActionWithUserUnauthorized()
@@ -145,7 +186,7 @@ class TaskControllerTest extends WebTestCase
         $task = $this->entityManager->getRepository(Task::class)->findOneBy([]);
         $taskId = $task->getId();
 
-        $crawler = $this->client->request('GET', '/tasks');
+        $crawler = $this->client->request('GET', '/tasks/todo');
 
         $form = $crawler->filter('form[action="/tasks/'.$taskId.'/delete"]')->form();
         $this->client->submit($form);
@@ -157,7 +198,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testDeleteTaskActionWithoutUserConnected()
     {
-        $this->client->request('GET', '/tasks');
+        $this->client->request('GET', '/tasks/todo');
 
         $this->assertResponseStatusCodeSame(302);
         $this->client->followRedirect();

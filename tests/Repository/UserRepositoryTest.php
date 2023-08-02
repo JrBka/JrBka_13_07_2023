@@ -6,7 +6,6 @@ use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 class UserRepositoryTest extends KernelTestCase
 {
@@ -34,7 +33,8 @@ class UserRepositoryTest extends KernelTestCase
     public function testFind(): void
     {
         $user = new User();
-        $username = 'user'.random_bytes(20);
+        $nb = uniqid();
+        $username = 'user'.$nb;
         $user->setUsername($username)
             ->setPlainPassword('Password123$')
             ->setEmail('user@gmail.com')
@@ -51,7 +51,8 @@ class UserRepositoryTest extends KernelTestCase
     public function testFindOneBy(): void
     {
         $user = new User();
-        $username = 'user'.random_bytes(20);
+        $nb = uniqid();
+        $username = 'user'.$nb;
         $user->setUsername($username)
             ->setPlainPassword('Password123$')
             ->setEmail('user@gmail.com')
@@ -67,7 +68,8 @@ class UserRepositoryTest extends KernelTestCase
     public function testFindAll(): void
     {
         $user = new User();
-        $username = 'user'.random_bytes(20);
+        $nb = uniqid();
+        $username = 'user'.$nb;
         $user->setUsername($username)
             ->setPlainPassword('Password123$')
             ->setEmail('user@gmail.com')
@@ -84,7 +86,8 @@ class UserRepositoryTest extends KernelTestCase
     public function testFindBy(): void
     {
         $user = new User();
-        $username = 'user'.random_bytes(20);
+        $nb = uniqid();
+        $username = 'user'.$nb;
         $user->setUsername($username)
             ->setPlainPassword('Password123$')
             ->setEmail('user@gmail.com')
@@ -101,7 +104,8 @@ class UserRepositoryTest extends KernelTestCase
     public function testAddWithFlushTrue(): void
     {
         $user = new User();
-        $username = 'user'.random_bytes(20);
+        $nb = uniqid();
+        $username = 'user'.$nb;
         $user->setUsername($username)
             ->setPlainPassword('Password123$')
             ->setEmail('user@gmail.com')
@@ -118,7 +122,8 @@ class UserRepositoryTest extends KernelTestCase
     public function testAddWithFlushFalse(): void
     {
         $user = new User();
-        $username = 'user'.random_bytes(20);
+        $nb = uniqid();
+        $username = 'user'.$nb;
         $user->setUsername($username)
             ->setPlainPassword('Password123$')
             ->setEmail('user@gmail.com')
@@ -132,7 +137,8 @@ class UserRepositoryTest extends KernelTestCase
     public function testRemoveWithFlushTrue(): void
     {
         $user = new User();
-        $username = 'user'.random_bytes(20);
+        $nb = uniqid();
+        $username = 'user'.$nb;
         $user->setUsername($username)
             ->setPlainPassword('Password123$')
             ->setEmail('user@gmail.com')
@@ -149,7 +155,8 @@ class UserRepositoryTest extends KernelTestCase
     public function testRemoveWithFlushFalse(): void
     {
         $user = new User();
-        $username = 'user'.random_bytes(20);
+        $nb = uniqid();
+        $username = 'user'.$nb;
         $user->setUsername($username)
             ->setPlainPassword('Password123$')
             ->setEmail('user@gmail.com')
@@ -166,7 +173,8 @@ class UserRepositoryTest extends KernelTestCase
     public function testUpgradePassword(): void
     {
         $user = new User();
-        $username = 'user'.random_bytes(20);
+        $nb = uniqid();
+        $username = 'user'.$nb;
         $user->setUsername($username)
             ->setPlainPassword('Password123$')
             ->setEmail('user@gmail.com')
@@ -176,10 +184,8 @@ class UserRepositoryTest extends KernelTestCase
 
         $pwd1 = $this->repository->findOneBy(['username'=>$username])->getPassword();
 
-        // Définir le nouveau mot de passe hashé
         $newHashedPassword = 'nouveauMotDePasse123';
 
-        // Appeler la méthode upgradePassword sur le repository
         $this->repository->upgradePassword($user, $newHashedPassword);
 
         $pwd2 = $this->repository->findOneBy(['username'=>$username])->getPassword();

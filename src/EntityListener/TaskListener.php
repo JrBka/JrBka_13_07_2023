@@ -2,8 +2,6 @@
 
 namespace App\EntityListener;
 
-
-
 use App\Entity\Task;
 use App\Repository\UserRepository;
 use Symfony\Component\Security\Core\Security;
@@ -20,6 +18,7 @@ class TaskListener
     }
 
     /**
+     * This function defines the author of the task before being persisted
      * @param Task $task
      * @return void
      */

@@ -51,21 +51,14 @@ class UserControllerTest extends WebTestCase
 
     public function testCreateAction()
     {
-        $roles = $this->entityManager->getRepository(Role::class)->findAll();
-        foreach ($roles as $role){
-            if ($role->getRoleName()[0] == "ROLE_USER"){
-                $this->roleId= $role->getId();
-            }
-        }
-
         $this->client->request('GET', '/users/create');
 
+        $nb = uniqid();
         $this->client->submitForm('Ajouter',[
-                'user[username]'=> 'bibi5',
+                'user[username]'=> 'bibi'.$nb,
                 'user[plainPassword][first]' => 'Password123$',
                 'user[plainPassword][second]' => 'Password123$',
-                'user[email]' => 'bibi2@gmail.com',
-                'user[roles]' => $this->roleId
+                'user[email]' => 'bibi2@gmail.com'
             ]
         );
 
@@ -76,13 +69,13 @@ class UserControllerTest extends WebTestCase
         $this->assertSelectorExists('.alert.alert-success', 'L\'utilisateur a bien été créé');
     }
 
-    public function testEditActionWithUserAuthorized()
+    public function testEditActionWithUserAuthorizedAndWithRole()
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->client->loginUser($user);
         $userEdit = $this->entityManager->getRepository(User::class)->findOneBy([],['id'=>'DESC']);
         $userEditId = $userEdit->getId();
-        $nb = random_int(2,2000);
+        $nb = uniqid();
         $roles = $this->entityManager->getRepository(Role::class)->findAll();
         foreach ($roles as $role){
             if ($role->getRoleName()[0] == "ROLE_USER"){
@@ -98,6 +91,35 @@ class UserControllerTest extends WebTestCase
                 'user[plainPassword][second]' => 'Password123$',
                 'user[email]' => 'bibi530@gmail.com',
                 'user[roles]' => $this->roleId
+            ]
+        );
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success', 'L\'utilisateur a bien été modifié');
+    }
+
+    public function testEditActionWithUserAuthorizedAndWithoutRole()
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
+        $this->client->loginUser($user);
+        $userEdit = $this->entityManager->getRepository(User::class)->findOneBy([],['id'=>'DESC']);
+        $userEditId = $userEdit->getId();
+        $nb = uniqid();
+        $roles = $this->entityManager->getRepository(Role::class)->findAll();
+        foreach ($roles as $role){
+            if ($role->getRoleName()[0] == "ROLE_USER"){
+                $this->roleId= $role->getId();
+            }
+        }
+
+        $this->client->request('GET', '/users/'.$userEditId.'/edit');
+
+        $this->client->submitForm('Modifier',[
+                'user[username]'=> 'bibi'.$nb,
+                'user[plainPassword][first]' => 'Password123$',
+                'user[plainPassword][second]' => 'Password123$',
+                'user[email]' => 'bibi530@gmail.com'
             ]
         );
 

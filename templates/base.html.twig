@@ -28,7 +28,7 @@
         <nav class="navbar navbar-light navbar-fixed-top" style="background-color: #e3f2fd;" role="navigation">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#">To Do List app</a>
+                    <a class="navbar-brand" href="{{ path('homepage') }}">To Do List app</a>
 
                     <img src="{{ asset('assets/img/Logo_OpenClassrooms.png') }}" alt="OpenClassrooms" />
                 </div>
@@ -38,7 +38,18 @@
         <!-- Page Content -->
         <div class="container">
             <div class="row">
-                <a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
+
+                {% if 'homepage' != app.request.attributes.get('_route') %}
+                    <a href="{{ path('homepage') }}" class="btn btn-success">Accueil</a>
+                {% endif %}
+
+                {% if not app.user and 'user_create' != app.request.attributes.get('_route') %}
+                    <a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
+                {% endif %}
+
+                {% if app.user and app.user.roles == ['ROLE_ADMIN'] and 'user_list' != app.request.attributes.get('_route') %}
+                    <a href="{{ path('user_list') }}" class="btn btn-info">Consulter la liste des utilisateurs</a>
+                {% endif %}
 
                 {% if app.user %}
                 <a href="{{ path('logout') }}" class="pull-right btn btn-danger">Se déconnecter</a>

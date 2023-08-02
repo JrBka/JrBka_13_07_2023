@@ -1,9 +1,15 @@
 {% extends 'base.html.twig' %}
 
+{% block header_title %}
+    {% if tasks[0] is defined and tasks[0].isDone %}<h1>Liste des tâches terminée</h1>
+    {% elseif tasks[0] is defined and not tasks[0].isDone%}<h1>Liste des tâches à faire</h1>
+    {% elseif tasks[0] is not defined %}<h1></h1>
+    {% endif %}
+{% endblock %}
+
 {% block header_img %}<img class="slide-image" src="{{ asset('assets/img/todolist_content.jpg') }}" alt="todo list">{% endblock %}
 
 {% block body %}
-    <h1>Liste des tâches</h1>
     <a href="{{ path('task_create') }}" class="btn btn-info pull-right">Créer une tâche</a>
     <div class="row">
         {% for task in tasks %}

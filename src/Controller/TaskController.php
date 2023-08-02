@@ -14,14 +14,25 @@ use Symfony\Component\Routing\Annotation\Route;
 class TaskController extends AbstractController
 {
     /**
-     * @Route("/tasks", name="task_list")
+     * This function displays the list of tasks to do
+     * @Route("/tasks/todo", name="task_list_todo")
      */
-    public function listAction(TaskRepository $repository): Response
+    public function listToDo(TaskRepository $repository): Response
     {
-        return $this->render('task/list.html.twig', ['tasks' => $repository->findAll()]);
+        return $this->render('task/list.html.twig', ['tasks' => $repository->findBy(['isDone'=>false])]);
     }
 
     /**
+     * This function displays the list of tasks done
+     * @Route("/tasks/done", name="task_list_done")
+     */
+    public function listDone(TaskRepository $repository): Response
+    {
+        return $this->render('task/list.html.twig', ['tasks' => $repository->findBy(['isDone'=>true])]);
+    }
+
+    /**
+     * This function displays the creation of task page and creates a task
      * @Route("/tasks/create", name="task_create")
      */
     public function createAction(Request $request, EntityManagerInterface $em)
@@ -38,13 +49,14 @@ class TaskController extends AbstractController
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list_todo');
         }
 
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
     /**
+     * This function displays the edition of task page and edits a task
      * @Route("/tasks/{id}/edit", name="task_edit")
      */
     public function editAction(Task $task, Request $request, EntityManagerInterface $em)
@@ -59,7 +71,7 @@ class TaskController extends AbstractController
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list_todo');
         }
 
         return $this->render('task/edit.html.twig', [
@@ -69,6 +81,7 @@ class TaskController extends AbstractController
     }
 
     /**
+     * This function defines if a task is done or to do
      * @Route("/tasks/{id}/toggle", name="task_toggle")
      */
     public function toggleTaskAction(Task $task, EntityManagerInterface $em) : Response
@@ -77,12 +90,19 @@ class TaskController extends AbstractController
         $em->persist($task);
         $em->flush();
 
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+        if ($task->isDone()){
+            $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
 
-        return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list_done');
+        }else{
+            $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme non terminé.', $task->getTitle()));
+
+            return $this->redirectToRoute('task_list_todo');
+        }
     }
 
     /**
+     * This function remove a task
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
     public function deleteTaskAction(Task $task, EntityManagerInterface $em): Response
@@ -102,6 +122,6 @@ class TaskController extends AbstractController
             $this->addFlash('error', 'Vous n\'avez pas l\'autorisation de faire ca.');
         }
 
-        return $this->redirectToRoute('task_list');
+        return $this->redirectToRoute('task_list_todo');
     }
 }

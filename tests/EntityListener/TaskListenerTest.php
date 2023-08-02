@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\EntityListener\TaskListener;
 use App\Repository\UserRepository;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Security\Core\Security;
 
 class TaskListenerTest extends TestCase
