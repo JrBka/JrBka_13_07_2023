@@ -37,6 +37,13 @@ class UserType extends AbstractType
 
         $builder
             ->add('username', TextType::class, [
+                'attr'=>[
+                    'class'=> 'form-control ',
+                    'style'=>'margin-bottom: 15px'
+                ],
+                'label_attr'=>[
+                    'class'=>'form-label'
+                ],
                 'label' => "Nom d'utilisateur",
                 'required'=>true,
                 ])
@@ -45,8 +52,28 @@ class UserType extends AbstractType
                 'mapped' => false,
                 'required'=> $this->admin ? false : true,
                 'invalid_message' => 'Les deux mots de passe doivent correspondre.',
-                'first_options'  => ['label' => 'Mot de passe', 'required' => $this->admin ? false : true],
-                'second_options' => ['label' => 'Tapez le mot de passe à nouveau', 'required' => $this->admin ? false : true],
+                'first_options'  => [
+                    'label' => 'Mot de passe',
+                    'required' => $this->admin ? false : true,
+                    'attr'=>[
+                        'class'=> 'form-control ',
+                        'style'=>'margin-bottom: 15px'
+                    ],
+                    'label_attr'=>[
+                        'class'=>'form-label'
+                    ],
+                    ],
+                'second_options' => [
+                    'label' => 'Tapez le mot de passe à nouveau',
+                    'required' => $this->admin ? false : true,
+                    'attr'=>[
+                        'class'=> 'form-control ',
+                        'style'=>'margin-bottom: 15px'
+                    ],
+                    'label_attr'=>[
+                        'class'=>'form-label'
+                    ],
+                    ],
                 'constraints' => new Assert\Regex(['pattern' => '/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?([^\w\s]|[_])).{8,}$/',
                     'match' => true,
                     'message' => 'Votre mot de passe doit comporter au moins huit caractères, dont des lettres majuscules et minuscules, un chiffre et un symbole',
@@ -54,6 +81,13 @@ class UserType extends AbstractType
                 ])
             ])
             ->add('email', EmailType::class, [
+                'attr'=>[
+                    'class'=> 'form-control',
+                    'style'=>'margin-bottom: 15px'
+                ],
+                'label_attr'=>[
+                    'class'=>'form-label'
+                ],
                 'label' => 'Adresse email',
                 'required'=>true,
                 ])
@@ -62,6 +96,13 @@ class UserType extends AbstractType
                 if ($this->security->getUser() && $this->admin){
                 $form->add('roles',EntityType::class, [
                     'class'=>Role::class,
+                    'attr'=>[
+                        'class'=> 'form-control',
+                        'style'=>'margin-bottom: 15px'
+                    ],
+                    'label_attr'=>[
+                        'class'=>'form-label'
+                    ],
                     'label'=> 'Role',
                     'multiple'=>true,
                     'mapped'=>false,

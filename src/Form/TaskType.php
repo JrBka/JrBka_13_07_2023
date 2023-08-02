@@ -15,10 +15,24 @@ class TaskType extends AbstractType
     {
         $builder
             ->add('title', TextType::class,[
+                'attr'=>[
+                    'class'=> 'form-control',
+                    'style'=>'margin-bottom: 15px'
+                ],
+                'label_attr'=>[
+                    'class'=>'form-label'
+                ],
                 'label'=>'Titre',
                 'required'=>true
             ])
             ->add('content',TextareaType::class,[
+                'attr'=>[
+                    'class'=> 'form-control',
+                    'style'=>'margin-bottom: 15px'
+                ],
+                'label_attr'=>[
+                    'class'=>'form-label'
+                ],
                 'label'=>'Contenu',
                 'required'=>true
                 ])
