@@ -12,14 +12,9 @@ use Symfony\Component\Security\Core\Security;
 class UserListener{
 
     private $hasher;
-    private $role;
-    private $roleRepository;
-    private $security;
 
-    public function __construct(UserPasswordHasherInterface $hasher, RoleRepository $roleRepository, Security $security){
+    public function __construct(UserPasswordHasherInterface $hasher){
         $this->hasher = $hasher;
-        $this->security = $security;
-        $this->roleRepository = $roleRepository;
     }
 
     /**
@@ -31,9 +26,6 @@ class UserListener{
     public function PrePersist(User $user):void
     {
         $this->encodePassword($user);
-        if (!$this->security->getUser() && $user->getRole() == null){
-            $this->addRole($user);
-        }
     }
 
     /**
@@ -65,24 +57,6 @@ class UserListener{
                 )
             );
         }
-    }
-
-    /**
-     * This function adds role user
-     *
-     * @param User $user
-     * @return void
-     */
-    public function addRole(User $user){
-        $roles = $this->roleRepository->findAll();
-
-        foreach ($roles as $val){
-
-            if ($val->getRoleName() == ["ROLE_USER"]){
-                $this->role = $val;
-            }
-        }
-        $user->setRoles($this->role);
     }
 
 }

@@ -35,7 +35,9 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('plainPassword')->getData();
+            $role = $form->get('roles')->getData();
 
+            $user->setRoles($role[0]);
             $user->setPlainPassword($plainPassword);
 
             $em->persist($user);
@@ -63,15 +65,9 @@ class UserController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
             $role = $form->get('roles')->getData();
 
-            if ($role[0] != null){
-                $user->setRoles($role[0]);
-            }else{
-                $user->setRoles($user->getRole());
-            }
+            $user->setRoles($role[0]);
 
-            if ($plainPassword != null){
-                $user->setPlainPassword($plainPassword);
-            }
+            $user->setPlainPassword($plainPassword);
 
             $em->persist($user);
             $em->flush();

@@ -49,27 +49,55 @@ class UserControllerTest extends WebTestCase
     }
 
 
-    public function testCreateAction()
+    public function testCreateActionWithUserAuthorized()
     {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
+        $this->client->loginUser($user);
+
         $this->client->request('GET', '/users/create');
+
+        $roles = $this->entityManager->getRepository(Role::class)->findAll();
+        foreach ($roles as $role){
+            if ($role->getRoleName()[0] == "ROLE_USER"){
+                $this->roleId= $role->getId();
+            }
+        }
 
         $nb = uniqid();
         $this->client->submitForm('Ajouter',[
-                'user[username]'=> 'bibi'.$nb,
+                'user[username]'=> 'bibi'.$nb.$nb,
                 'user[plainPassword][first]' => 'Password123$',
                 'user[plainPassword][second]' => 'Password123$',
-                'user[email]' => 'bibi2@gmail.com'
+                'user[email]' => 'bibi2@gmail.com',
+                'user[roles]'=> $this->roleId
             ]
         );
 
         $this->assertResponseStatusCodeSame(302);
         $this->client->followRedirect();
-        $this->assertResponseStatusCodeSame(302);
-        $this->client->followRedirect();
+        $this->assertResponseStatusCodeSame(200);
         $this->assertSelectorExists('.alert.alert-success', 'L\'utilisateur a bien été créé');
     }
 
-    public function testEditActionWithUserAuthorizedAndWithRole()
+    public function testCreateActionWithUserUnauthorized()
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'anonyme']);
+        $this->client->loginUser($user);
+        $this->client->request('GET', '/users/create');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testCreateActionWithoutUserConnected()
+    {
+        $this->client->request('GET', '/users/create');
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertSelectorExists('form[action="/login_check"]');
+    }
+
+    public function testEditActionWithUserAuthorized()
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->client->loginUser($user);
@@ -86,40 +114,11 @@ class UserControllerTest extends WebTestCase
         $this->client->request('GET', '/users/'.$userEditId.'/edit');
 
         $this->client->submitForm('Modifier',[
-                'user[username]'=> 'bibi'.$nb,
+                'user[username]'=> 'bibi'.$nb.$nb,
                 'user[plainPassword][first]' => 'Password123$',
                 'user[plainPassword][second]' => 'Password123$',
                 'user[email]' => 'bibi530@gmail.com',
                 'user[roles]' => $this->roleId
-            ]
-        );
-
-        $this->assertResponseStatusCodeSame(302);
-        $this->client->followRedirect();
-        $this->assertSelectorExists('.alert.alert-success', 'L\'utilisateur a bien été modifié');
-    }
-
-    public function testEditActionWithUserAuthorizedAndWithoutRole()
-    {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
-        $this->client->loginUser($user);
-        $userEdit = $this->entityManager->getRepository(User::class)->findOneBy([],['id'=>'DESC']);
-        $userEditId = $userEdit->getId();
-        $nb = uniqid();
-        $roles = $this->entityManager->getRepository(Role::class)->findAll();
-        foreach ($roles as $role){
-            if ($role->getRoleName()[0] == "ROLE_USER"){
-                $this->roleId= $role->getId();
-            }
-        }
-
-        $this->client->request('GET', '/users/'.$userEditId.'/edit');
-
-        $this->client->submitForm('Modifier',[
-                'user[username]'=> 'bibi'.$nb,
-                'user[plainPassword][first]' => 'Password123$',
-                'user[plainPassword][second]' => 'Password123$',
-                'user[email]' => 'bibi530@gmail.com'
             ]
         );
 
