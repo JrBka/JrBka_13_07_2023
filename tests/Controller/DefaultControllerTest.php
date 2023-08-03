@@ -25,6 +25,8 @@ class DefaultControllerTest extends WebTestCase
         $this->client->request('get', $this->urlGenerator->generate('homepage'));
 
         $this->assertResponseStatusCodeSame(302);
+        $this->client->followRedirect();
+        $this->assertRouteSame('login');
     }
 
     public function testHomePageWithUser()
@@ -39,6 +41,7 @@ class DefaultControllerTest extends WebTestCase
         $this->client->request('get', $this->urlGenerator->generate('homepage'));
 
         $this->assertResponseStatusCodeSame(200);
+        $this->assertRouteSame('homepage');
     }
 
 }

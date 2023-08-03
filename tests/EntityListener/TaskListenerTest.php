@@ -28,7 +28,19 @@ class TaskListenerTest extends TestCase
         $this->listener = new TaskListener($this->repository, $this->security);
     }
 
-    public function testPrePersistWithUser(): void
+    public function testPrePersistWithUserDefined(): void
+    {
+        $user = new User();
+        $task = new Task();
+
+        $task->setUser($user);
+
+        $this->listener->prePersist($task);
+
+        $this->assertEquals($user, $task->getUser());
+    }
+
+    public function testPrePersistWithUserConnected(): void
     {
         $user = new User();
         $task = new Task();

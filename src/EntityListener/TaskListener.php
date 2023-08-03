@@ -18,15 +18,22 @@ class TaskListener
     }
 
     /**
+     *
      * This function defines the author of the task before being persisted
+     *
      * @param Task $task
      * @return void
      */
     public function PrePersist(Task $task): void
     {
-        if ($this->security->getUser()){
+
+        if(!empty($task->getUser())) {
+            return;
+        }
+        elseif ($this->security->getUser()){
             $this->user = $this->security->getUser();
-        }else{
+        }
+        else{
             $this->user = $this->repository->findOneBy(['username' => 'anonyme']);
         }
 

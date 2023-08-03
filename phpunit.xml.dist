@@ -34,8 +34,8 @@
         <log type="coverage-text" target="php://stdout"/>
     </logging>
 
-    <!-- Uncomment when adding extensions
     <extensions>
+        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
     </extensions>
-    -->
+
 </phpunit>

@@ -24,7 +24,7 @@ class UserControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(302);
         $this->client->followRedirect();
-        $this->assertSelectorExists('form[action="/login_check"]');
+        $this->assertRouteSame('login');
     }
 
     public function testListActionWithUserUnauthorized()
@@ -45,7 +45,7 @@ class UserControllerTest extends WebTestCase
         $this->client->request('GET', '/users');
 
         $this->assertResponseStatusCodeSame(200);
-        $this->assertSelectorTextContains('h1', 'Liste des utilisateurs');
+        $this->assertRouteSame('user_list');
     }
 
 
@@ -65,7 +65,7 @@ class UserControllerTest extends WebTestCase
 
         $nb = uniqid();
         $this->client->submitForm('Ajouter',[
-                'user[username]'=> 'bibi'.$nb.$nb,
+                'user[username]'=> 'bibi'.$nb,
                 'user[plainPassword][first]' => 'Password123$',
                 'user[plainPassword][second]' => 'Password123$',
                 'user[email]' => 'bibi2@gmail.com',
@@ -81,7 +81,7 @@ class UserControllerTest extends WebTestCase
 
     public function testCreateActionWithUserUnauthorized()
     {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'anonyme']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'user1']);
         $this->client->loginUser($user);
         $this->client->request('GET', '/users/create');
 
@@ -94,13 +94,14 @@ class UserControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(302);
         $this->client->followRedirect();
-        $this->assertSelectorExists('form[action="/login_check"]');
+        $this->assertRouteSame('login');
     }
 
     public function testEditActionWithUserAuthorized()
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->client->loginUser($user);
+
         $userEdit = $this->entityManager->getRepository(User::class)->findOneBy([],['id'=>'DESC']);
         $userEditId = $userEdit->getId();
         $nb = uniqid();
@@ -114,7 +115,7 @@ class UserControllerTest extends WebTestCase
         $this->client->request('GET', '/users/'.$userEditId.'/edit');
 
         $this->client->submitForm('Modifier',[
-                'user[username]'=> 'bibi'.$nb.$nb,
+                'user[username]'=> 'bibi'.$nb,
                 'user[plainPassword][first]' => 'Password123$',
                 'user[plainPassword][second]' => 'Password123$',
                 'user[email]' => 'bibi530@gmail.com',
@@ -148,6 +149,6 @@ class UserControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(302);
         $this->client->followRedirect();
-        $this->assertSelectorExists('form[action="/login_check"]');
+        $this->assertRouteSame('login');
     }
 }

@@ -27,7 +27,7 @@ class SecurityControllerTest extends WebTestCase
         $this->client->request('GET', $this->urlGenerator->generate('login'));
 
         $this->assertResponseStatusCodeSame(200);
-        $this->assertSelectorExists('form[action="/login_check"]');
+        $this->assertRouteSame('login');
     }
 
     public function testLoginWithBadCredentials()
@@ -45,6 +45,7 @@ class SecurityControllerTest extends WebTestCase
         $this->client->followRedirect();
 
         $this->assertSelectorExists('.alert.alert-danger','invalid credentials');
+        $this->assertRouteSame('login');
     }
 
     public function testLoginWithGoodCredentials()
@@ -62,6 +63,7 @@ class SecurityControllerTest extends WebTestCase
         $this->client->followRedirect();
 
         $this->assertSelectorTextContains('h1','Bienvenue sur Todo List');
+        $this->assertRouteSame('homepage');
     }
 
     public function testLogout()
@@ -76,6 +78,6 @@ class SecurityControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(302);
         $this->client->followRedirect();
 
-        $this->assertSelectorExists('.btn.btn-success');
+        $this->assertRouteSame('login');
     }
 }
