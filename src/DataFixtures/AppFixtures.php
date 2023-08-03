@@ -99,7 +99,8 @@ class AppFixtures extends Fixture
         $task7 = new Task();
         $task7->setTitle('La tache 7')
             ->setContent('Cette tâche est importante !')
-            ->setUser($admin);
+            ->toggle(true)
+            ->setUser($user1);
         $manager->persist($task7);
 
         $task8 = new Task();
@@ -109,12 +110,6 @@ class AppFixtures extends Fixture
             ->setUser($admin);
         $manager->persist($task8);
 
-        $task9 = new Task();
-        $task9->setTitle('La tache 9')
-            ->setContent('Cette tâche est importante !')
-            ->toggle(true)
-            ->setUser($user1);
-        $manager->persist($task9);
 
         $manager->flush();
     }
