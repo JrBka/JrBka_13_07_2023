@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=TaskRepository::class)
- * @UniqueEntity("title")
+ * @UniqueEntity("title", message="Ce titre existe déjà")
  */
 class Task
 {
@@ -26,7 +26,8 @@ class Task
     private $createdAt;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\NotEqualTo(value=" ")
      * @Assert\NotBlank(message="Vous devez saisir un titre.")
      */
     private $title;
@@ -75,7 +76,7 @@ class Task
         return $this->title;
     }
 
-    public function setTitle(string $title): self
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
 
@@ -87,7 +88,7 @@ class Task
         return $this->content;
     }
 
-    public function setContent(string $content): self
+    public function setContent(?string $content): self
     {
         $this->content = $content;
 

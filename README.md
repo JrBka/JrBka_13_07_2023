@@ -31,3 +31,4 @@ Pour générer les tests et le code coverage utilisez la commande :
 -   vendor/bin/phpunit --coverage-html public/test-coverage
 
 Vous pouvez consulter le code coverage au format html dans votre navigateur à l'adresse suivante : https://127.0.0.1:8000/test-coverage/dashboard
+
